@@ -21,3 +21,7 @@ db.once('open', () => {
     console.log(`API server for ${activity} running on port ${PORT}!`);
   });
 });
+
+app.get('/', (req, res) => {
+  res.send('<h1>It works!</h1>')
+})
