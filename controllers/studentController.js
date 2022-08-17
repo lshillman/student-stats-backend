@@ -2,9 +2,11 @@ const { Student, Course } = require('../models');
 
 // TODO: Create an aggregate function to get the number of students overall
 const headCount = async () =>
-  Student.aggregate()
+  Student.aggregate().count("headCount")
     // Your code here
-    .then((numberOfStudents) => numberOfStudents);
+    
+
+    .then((numberOfStudents) => numberOfStudents[0].headCount);
 
 // TODO: Create a function that executes the aggregate method on the Student model and will calculate the overall grade by using the $avg operator
 const grade = async (studentId) =>
@@ -13,7 +15,11 @@ const grade = async (studentId) =>
       $unwind: '$assignments',
     },
     {
-      // Your code here
+      $group: {
+        _id: studentId,
+        // Your code here
+        grade: { $avg: '$assignments.score' }
+      }
     },
   ]);
 
@@ -23,8 +29,8 @@ module.exports = {
     Student.find()
       .then(async (students) => {
         const studentObj = {
-          students,
           headCount: await headCount(),
+          students
         };
         return res.json(studentObj);
       })
